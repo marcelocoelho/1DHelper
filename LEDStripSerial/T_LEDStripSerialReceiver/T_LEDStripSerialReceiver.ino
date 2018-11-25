@@ -9,7 +9,7 @@
 #include "FastLED.h"
 
 // How many leds in your strip?
-#define NUM_LEDS 10
+#define NUM_LEDS 3
 
 // Define what pins you are using for data and clock line
 #define DATA_PIN A1 //3
@@ -32,11 +32,54 @@ void setup() {
 
 }
 
-unsigned char colorFrame[3];
+
+//#define pixelNumber 3
+
+int colorIndex = 0;
+//int ledIndex = 0;
+unsigned char colorFrame[3*NUM_LEDS];
 int colorSelect = 0;
+bool writingFrame = false;
+
 
 void processByte(unsigned char currentByte) {
 
+
+  // Toggle based on START = 255 and END = 254 bytes
+  if (currentByte == 255) {
+    writingFrame = true;  // a messsage has started
+    
+  } else if (currentByte == 254) {
+    writingFrame = false; // a message has ended
+
+    // now let's show what we got
+    colorIndex = 0;
+    //ledIndex = 0;
+
+    for (int i = 0; i < NUM_LEDS; i++){
+      leds[i] = CRGB(colorFrame[(i*3)],colorFrame[(i*3)+1],colorFrame[(i*3)+2]);
+    }
+    FastLED.show();
+
+  }
+
+
+  // then read incoming data and assign to array
+  if (writingFrame == true) {
+    colorFrame[colorIndex] = currentByte;
+    colorIndex++;
+  }
+
+
+  
+
+  // if currentByte = 244  then close message, update strip and clear everything
+   
+
+
+
+
+  /*
   if (currentByte != 0) {
 
       colorFrame[colorSelect] = currentByte;
@@ -46,8 +89,10 @@ void processByte(unsigned char currentByte) {
     colorSelect = 0;
     
   }
+  */
   
 }
+
 
 
 void loop() {
@@ -58,14 +103,20 @@ void loop() {
     processByte(Serial.read()); bytesRead++;
   }
 
-  colorSelect = 0;
+  //colorSelect = 0;
 
-  leds[0] = CRGB(colorFrame[0],colorFrame[1],colorFrame[2]);
-  FastLED.show();
+  //leds[0] = CRGB(colorFrame[0],colorFrame[1],colorFrame[2]);
+  //FastLED.show();
   
+}
 
 
 
+
+
+
+
+////////// TRASH
 
 
 /*
@@ -97,5 +148,3 @@ if (Serial.available()) {
     }
     */
     //Serial.println("y");
-
-}

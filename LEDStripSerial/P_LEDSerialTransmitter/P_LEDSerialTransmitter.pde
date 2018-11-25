@@ -1,6 +1,11 @@
 
 import processing.serial.*;
 
+char START = 255;
+char END = 254;
+
+
+
 // The serial port:
 Serial myPort;
 
@@ -14,14 +19,12 @@ color initColor = color(0, 0, 0);
 
 void setup() {
   
-  displayBuffer = new color[DISPLAY_SIZE];
-  for(int i = START_POS; i < DISPLAY_SIZE; i++) {    // initialize display with black
-    displayBuffer[i] = initColor; 
-  }
+  initDisplayBuffer();
   
-  displayBuffer[0] = color(125,1,1);
-  displayBuffer[1] = color(1,125,1);
-  displayBuffer[2] = color(1,1,125);
+  // Add some random colors for testing
+  displayBuffer[0] = color(0,125,0);
+  displayBuffer[1] = color(0,125,0);
+  displayBuffer[2] = color(0,125,0);
   
   
   // List all the available serial ports:
@@ -29,8 +32,6 @@ void setup() {
 
   // Open the port you are using at the rate you want:
   myPort = new Serial(this, Serial.list()[5], 115200);
-
-
 
 }
 
@@ -52,31 +53,69 @@ void draw() {
   
 }
 
+void initDisplayBuffer() {
+  
+  displayBuffer = new color[DISPLAY_SIZE];
+  for(int i = START_POS; i < DISPLAY_SIZE; i++) {    // initialize display with black
+    displayBuffer[i] = initColor; 
+  }  
+  
+}
+
+
+void transmitFullBuffer() {
+  
+  myPort.write(START);
+  
+  for (int pixel = 0; pixel < DISPLAY_SIZE; pixel++){
+    
+    myPort.write(byte(red(displayBuffer[pixel])));
+    myPort.write(byte(green(displayBuffer[pixel])));
+    myPort.write(byte(blue(displayBuffer[pixel])));  
+  }
+  
+  myPort.write(END);
+}
+
+
+
+
+void transmitPixel(int _pixelNumber) {
+  
+      myPort.write(START);
+      myPort.write(_pixelNumber);
+      myPort.write(byte(red(displayBuffer[_pixelNumber])));
+      myPort.write(byte(green(displayBuffer[_pixelNumber])));
+      myPort.write(byte(blue(displayBuffer[_pixelNumber]))); 
+      myPort.write(0);
+  
+}
+
 
 void keyPressed() {
 
+    if (key == 'l') {
+      transmitFullBuffer();
+    }
+  
     //myPort.write(98);
     
     if (key == 'a') {
-      myPort.write(byte(red(displayBuffer[0])));
-      myPort.write(byte(green(displayBuffer[0])));
-      myPort.write(byte(blue(displayBuffer[0]))); 
-      myPort.write(0);
+      
+      transmitPixel(0);
       
     }
     
     if (key == 's') {
-      myPort.write(byte(red(displayBuffer[1])));
-      myPort.write(byte(green(displayBuffer[1])));
-      myPort.write(byte(blue(displayBuffer[1])));  
-      myPort.write(0);
+      
+      transmitPixel(1);
+      
     }
     
     if (key == 'd') {
-      myPort.write(byte(red(displayBuffer[2])));
-      myPort.write(byte(green(displayBuffer[2])));
-      myPort.write(byte(blue(displayBuffer[2])));  
-      myPort.write(0);      
+      
+      transmitPixel(2);      
+         
     }    
     
 
