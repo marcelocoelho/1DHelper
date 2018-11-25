@@ -22,9 +22,9 @@ void setup() {
   initDisplayBuffer();
   
   // Add some random colors for testing
-  displayBuffer[0] = color(0,125,0);
-  displayBuffer[1] = color(0,125,0);
-  displayBuffer[2] = color(0,125,0);
+  displayBuffer[0] = color(250,0,0);
+  displayBuffer[1] = color(0,250,0);
+  displayBuffer[2] = color(0,0,250);
   
   
   // List all the available serial ports:
@@ -68,6 +68,7 @@ void transmitFullBuffer() {
   myPort.write(START);
   
   for (int pixel = 0; pixel < DISPLAY_SIZE; pixel++){
+    //int pixel = 0;
     
     myPort.write(byte(red(displayBuffer[pixel])));
     myPort.write(byte(green(displayBuffer[pixel])));

@@ -30,13 +30,19 @@ void setup() {
 
   pinMode(13, OUTPUT);
 
+  //clean up
+  for (int i = 0; i < NUM_LEDS; i++){
+    leds[i] = CRGB(0,0,0);
+  }
+  FastLED.show();
+  
+
 }
 
 
 //#define pixelNumber 3
 
 int colorIndex = 0;
-//int ledIndex = 0;
 unsigned char colorFrame[3*NUM_LEDS];
 int colorSelect = 0;
 bool writingFrame = false;
@@ -48,14 +54,16 @@ void processByte(unsigned char currentByte) {
   // Toggle based on START = 255 and END = 254 bytes
   if (currentByte == 255) {
     writingFrame = true;  // a messsage has started
+    digitalWrite(13,HIGH);
     
   } else if (currentByte == 254) {
     writingFrame = false; // a message has ended
+    digitalWrite(13,LOW);
 
     // now let's show what we got
     colorIndex = 0;
-    //ledIndex = 0;
 
+    //int i = 0;
     for (int i = 0; i < NUM_LEDS; i++){
       leds[i] = CRGB(colorFrame[(i*3)],colorFrame[(i*3)+1],colorFrame[(i*3)+2]);
     }
@@ -66,31 +74,13 @@ void processByte(unsigned char currentByte) {
 
   // then read incoming data and assign to array
   if (writingFrame == true) {
-    colorFrame[colorIndex] = currentByte;
-    colorIndex++;
+
+    if (currentByte != 255) {
+      colorFrame[colorIndex] = currentByte;
+      colorIndex++;
+    }
   }
 
-
-  
-
-  // if currentByte = 244  then close message, update strip and clear everything
-   
-
-
-
-
-  /*
-  if (currentByte != 0) {
-
-      colorFrame[colorSelect] = currentByte;
-      colorSelect++;
-      
-  } else if  (currentByte == 0) {
-    colorSelect = 0;
-    
-  }
-  */
-  
 }
 
 
@@ -109,42 +99,3 @@ void loop() {
   //FastLED.show();
   
 }
-
-
-
-
-
-
-
-////////// TRASH
-
-
-/*
-if (Serial.available()) {
-    incomingByte = Serial.read();  // will not be -1
-    digitalWrite(13, HIGH);
-    //Serial.println("y");
-    delay(100);
-    digitalWrite(13, LOW);
-    // actually do something with incomingByte
-  }
-*/
-  
-  /*
-    for (int i = 0; i < NUM_LEDS; i++) {
-      leds[i] = CRGB::White;  // Load array with LED values
-      FastLED.show();         // Display what is in array
-      delay(20);             // Do nothing for certain amount of time
-      
-      //leds[i] = CRGB::Black;  // Load array with new LED value
-      //FastLED.show();         // Turn off
-    }
-
-    for (int i = 0; i < NUM_LEDS; i++) {
-      leds[i] = CRGB::Black;  // Load array with LED values
-      FastLED.show();         // Display what is in array
-      delay(20);             // Do nothing for certain amount of time
-
-    }
-    */
-    //Serial.println("y");
