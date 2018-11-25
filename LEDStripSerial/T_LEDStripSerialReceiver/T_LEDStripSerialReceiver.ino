@@ -72,10 +72,10 @@ void processByte(unsigned char currentByte) {
   }
 
 
-  // then read incoming data and assign to array
-  if (writingFrame == true) {
+  
+  if (writingFrame == true) {     // then read incoming data and assign to array
 
-    if (currentByte != 255) {
+    if (currentByte != 255) {     // but make sure to ignore start byte
       colorFrame[colorIndex] = currentByte;
       colorIndex++;
     }
@@ -93,9 +93,5 @@ void loop() {
     processByte(Serial.read()); bytesRead++;
   }
 
-  //colorSelect = 0;
 
-  //leds[0] = CRGB(colorFrame[0],colorFrame[1],colorFrame[2]);
-  //FastLED.show();
-  
 }

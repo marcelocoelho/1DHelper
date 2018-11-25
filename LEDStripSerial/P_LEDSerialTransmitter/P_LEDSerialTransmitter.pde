@@ -20,13 +20,7 @@ color initColor = color(0, 0, 0);
 void setup() {
   
   initDisplayBuffer();
-  
-  // Add some random colors for testing
-  displayBuffer[0] = color(250,0,0);
-  displayBuffer[1] = color(0,250,0);
-  displayBuffer[2] = color(0,0,250);
-  
-  
+   
   // List all the available serial ports:
   printArray(Serial.list());
 
@@ -37,19 +31,7 @@ void setup() {
 
 void draw() {
   
-  // Send a capital "A" out the serial port
-  //myPort.write(65);
-  
-  //myPort.write(displayBuffer);
-  
-  /*
-  for(int i = START_POS; i < DISPLAY_SIZE; i++) {    // initialize display with black
-    println(displayBuffer[0]);
-    myPort.write(byte(red(displayBuffer[0])));
-    //displayBuffer[i] = initColor; 
-  }
-  */
-  
+
   
 }
 
@@ -80,44 +62,24 @@ void transmitFullBuffer() {
 
 
 
-
-void transmitPixel(int _pixelNumber) {
-  
-      myPort.write(START);
-      myPort.write(_pixelNumber);
-      myPort.write(byte(red(displayBuffer[_pixelNumber])));
-      myPort.write(byte(green(displayBuffer[_pixelNumber])));
-      myPort.write(byte(blue(displayBuffer[_pixelNumber]))); 
-      myPort.write(0);
-  
-}
-
-
 void keyPressed() {
 
     if (key == 'l') {
+      
+      displayBuffer[0] = color(250,0,0);
+      displayBuffer[1] = color(0,250,0);
+      displayBuffer[2] = color(0,0,250);
+      
       transmitFullBuffer();
     }
   
-    //myPort.write(98);
-    
-    if (key == 'a') {
+    if (key == 'm') {
       
-      transmitPixel(0);
+      displayBuffer[0] = color(250,250,250);
+      displayBuffer[1] = color(250,250,250);
+      displayBuffer[2] = color(250,250,250);
       
-    }
-    
-    if (key == 's') {
-      
-      transmitPixel(1);
-      
-    }
-    
-    if (key == 'd') {
-      
-      transmitPixel(2);      
-         
+      transmitFullBuffer();
     }    
     
-
 }
