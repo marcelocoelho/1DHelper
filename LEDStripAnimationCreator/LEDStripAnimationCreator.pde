@@ -16,10 +16,12 @@ char END = 254;
 
 final static int DISPLAY_SIZE = 30;
 
+
+
 public void setup() {
   size(30, 1);
   
-  frameRate(1);
+  frameRate(30);
   
   animation = Gif.getPImages(this, "Animation.gif");
   animationSize = animation.length; 
@@ -36,59 +38,45 @@ void draw() {
  
   image(animation[nextFrame()], 0,0);    // displays image on screen
  
- //println(animation[nextFrame()].width); // grabing pixel width of GIF
- //println(int(red(animation[nextFrame()].pixels[15])));
- 
-   // move all pixels in GIF frame to display buffer
+   // move all pixels in current GIF frame to display buffer
+   int frameToShow = nextFrame();
    for (int i = 0; i < animation[0].width; i++) {
-     displayBuffer[i] = animation[nextFrame()].pixels[i];
+     displayBuffer[i] = animation[frameToShow].pixels[i];
    }
  
- 
   transmitFullBuffer();
- 
-  
 }
 
 
 
+// Transmits current frame on screen
 void transmitFullBuffer() {
   
   myPort.write(START);
   
   for (int pixel = 0; pixel < DISPLAY_SIZE; pixel++){
-    //int pixel = 0;
-    
-    //myPort.write(safe(byte(red(displayBuffer[pixel]))));
-    
-    myPort.write(safeRed(displayBuffer[pixel]));
-    myPort.write(safeRed(displayBuffer[pixel]));
-    myPort.write(safeRed(displayBuffer[pixel]));
-    
-    //myPort.write(safeColor(red(displayBuffer[pixel])));
-    //myPort.write(byte(green(displayBuffer[pixel])));
-    //myPort.write(byte(blue(displayBuffer[pixel])));  
+    myPort.write(byte(safe(red(displayBuffer[pixel]))));
+    myPort.write(byte(safe(green(displayBuffer[pixel]))));
+    myPort.write(byte(safe(blue(displayBuffer[pixel]))));  
   }
   
   myPort.write(END);
 }
 
 
-byte safeRed(color _c) {
+// this makes sure values don't overlap with START and END commands
+float safe (float _c) {
   
-  byte limitColor = byte(253);
+  if (_c > 253) {
+    _c = 253;
+  }
   
-  if (int(red(_c)) > limitColor) {
-      _c = limitColor;
-  } 
-    
-  return limitColor;
-    
+  return _c;
 }
 
 
 
-// little helper function to advance frames and loop 
+// Little helper function to advance frames and loop 
 int nextFrame() {
   if (currentFrame < animationSize-1) {
     currentFrame++;
