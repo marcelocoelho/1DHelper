@@ -30,7 +30,7 @@ void setup() {
 
   pinMode(13, OUTPUT);
 
-  //clean up
+  //clean up strip
   for (int i = 0; i < NUM_LEDS; i++){
     leds[i] = CRGB(0,0,0);
   }
@@ -60,20 +60,19 @@ void processByte(unsigned char currentByte) {
     writingFrame = false; // a message has ended
     digitalWrite(13,LOW);
 
-    // now let's show what we got
-    colorIndex = 0;
-
-    //int i = 0;
+    // now that we've received full frame, let's show it
     for (int i = 0; i < NUM_LEDS; i++){
       leds[i] = CRGB(colorFrame[(i*3)],colorFrame[(i*3)+1],colorFrame[(i*3)+2]);
     }
     FastLED.show();
 
+    colorIndex = 0;   // and reset things
+
   }
 
 
   
-  if (writingFrame == true) {     // then read incoming data and assign to array
+  if (writingFrame == true) {     // if we are in the middle of message transmission, then read incoming data and assign to array
 
     if (currentByte != 255) {     // but make sure to ignore start byte
       colorFrame[colorIndex] = currentByte;
@@ -87,11 +86,9 @@ void processByte(unsigned char currentByte) {
 
 void loop() {
 
-
  int bytesRead=0;
   while (Serial.available() > 0 && bytesRead<30000) {
     processByte(Serial.read()); bytesRead++;
   }
-
 
 }
