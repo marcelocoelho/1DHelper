@@ -16,10 +16,27 @@ color[] displayBuffer;
 color initColor = color(0, 0, 0);
 
 
+color[][] animation;
+int animNumberFrames = 30;
+int animNumberPixels = 30;
+color W = color(253, 253, 253);
+color BCK = color(0, 0, 0);
+color R = color(253, 0, 0);
+color G = color(0, 253, 0);
+color B = color(0, 0, 253);
+color Y = color(253, 253, 0);
+boolean animate = false;
+
+
+
+
 
 void setup() {
   
+  frameRate(60);
+  
   initDisplayBuffer();
+  initAnimation();
    
   // List all the available serial ports:
   printArray(Serial.list());
@@ -29,20 +46,65 @@ void setup() {
 
 }
 
+int frame = 0;
+
 void draw() {
   
+  if (animate) {
+ 
+    // this is one frame
+    myPort.write(START);
+    for (int pixel = 0; pixel < animNumberPixels-1; pixel++){
+      myPort.write(byte(red(animation[frame][pixel])));
+      myPort.write(byte(green(animation[frame][pixel])));
+      myPort.write(byte(blue(animation[frame][pixel])));  
+    }
+    myPort.write(END);    
+    
+    nextFrame();
+    
+  }
 
   
 }
+
+void nextFrame() {
+ 
+  if (frame < animNumberFrames-1) {
+    frame++;
+  } else {
+    frame = 0;
+  }
+  
+}
+
 
 void initDisplayBuffer() {
   
   displayBuffer = new color[DISPLAY_SIZE];
   for(int i = START_POS; i < DISPLAY_SIZE; i++) {    // initialize display with black
     displayBuffer[i] = initColor; 
-  }  
-  
+  }   
 }
+
+
+void initAnimation() {
+  
+  animation = new color[animNumberFrames][animNumberPixels];
+  for(int p = 0; p < animNumberPixels; p++) {    
+    for (int f = 0; f < animNumberFrames; f++) {
+      animation[f][p] = B;         // initialize all pixels in all frames with black
+    }
+  }   
+  
+  // simple moving  dot animation
+  for (int i = 0; i < 30; i++) {  
+    animation[i][i] = Y; 
+  }
+ 
+}
+
+
 
 
 void transmitFullBuffer() {
@@ -64,6 +126,11 @@ void transmitFullBuffer() {
 
 void keyPressed() {
 
+  if (key == 'e') {
+    animate = true;
+  }
+  
+  
     if (key == 'l') {
       
       displayBuffer[0] = color(250,0,0);

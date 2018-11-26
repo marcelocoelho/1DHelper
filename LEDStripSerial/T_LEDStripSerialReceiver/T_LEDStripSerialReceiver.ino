@@ -9,7 +9,7 @@
 #include "FastLED.h"
 
 // How many leds in your strip?
-#define NUM_LEDS 3
+#define NUM_LEDS 30
 
 // Define what pins you are using for data and clock line
 #define DATA_PIN A1 //3
