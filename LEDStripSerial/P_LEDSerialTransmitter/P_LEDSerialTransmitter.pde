@@ -32,7 +32,7 @@ boolean animate = false;
 
 void setup() {
   
-  frameRate(60);
+  frameRate(30);
   
   initDisplayBuffer();
   initAnimation();
@@ -92,7 +92,7 @@ void initAnimation() {
   animation = new color[animNumberFrames][animNumberPixels];
   for(int p = 0; p < animNumberPixels; p++) {    
     for (int f = 0; f < animNumberFrames; f++) {
-      animation[f][p] = B;         // initialize all pixels in all frames with black
+      animation[f][p] = R;         // initialize all pixels in all frames with black
     }
   }   
   
